@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ChallengePlusSoft</string>
-    <string name="hint_cpf">Digite seu CPF</string>
-    <string name="hint_email">Digite seu Email</string>
-    <string name="recovery_button_text">Recuperar Senha</string>
+    <string name="app_name">Challenge</string>
+    <string name="cpf_hint">CPF</string>
+    <string name="email_hint">E-mail</string>
+    <string name="senha_hint">Senha</string>
+    <string name="register_button">Cadastrar</string>
+    <string name="register_button_text">Cadastrar</string>
 </resources>

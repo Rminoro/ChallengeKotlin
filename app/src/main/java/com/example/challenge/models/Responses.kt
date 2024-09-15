@@ -10,3 +10,8 @@ data class RecoveryResponse(
     val success: Boolean,
     val message: String? = null
 )
+
+data class RegisterResponse(
+    val success: Boolean, // Indica se o registro foi bem-sucedido
+    val message: String   // Mensagem de sucesso ou erro
+)
