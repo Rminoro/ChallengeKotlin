@@ -8,10 +8,16 @@ data class LoginResponse(
 
 data class RecoveryResponse(
     val success: Boolean,
-    val message: String? = null
+    val message: String? = null,
+    val token: String? =null
 )
 
 data class RegisterResponse(
     val success: Boolean, // Indica se o registro foi bem-sucedido
     val message: String   // Mensagem de sucesso ou erro
+)
+
+data class ResetPasswordResponse(
+    val success: Boolean,
+    val message: String?
 )

@@ -1,5 +1,7 @@
 package com.example.challenge.ui.theme
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.clickable
@@ -20,7 +22,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun LoginScreen(onForgotPasswordClick: () -> Unit = {}) {
+fun LoginScreen(
+    onForgotPasswordClick: () -> Unit = {},
+    onRegisterClick: () -> Unit = {}
+) {
     var cpf by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
@@ -80,26 +85,51 @@ fun LoginScreen(onForgotPasswordClick: () -> Unit = {}) {
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Link "Esqueceu a senha?"
         Text(
             text = "Esqueceu a senha?",
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
-                .clickable { onForgotPasswordClick() }
+                .clickable {
+                    onForgotPasswordClick()
+                    // Adicione um log para verificar se está sendo chamado
+                    println("Navigating to Forgot Password Screen")
+                }
                 .padding(8.dp)
         )
 
-        // Exibir Toast ou outro feedback para o usuário baseado no resultado
-        LaunchedEffect(loginResult) {
-            loginResult?.let {
-                when {
-                    it.isSuccess -> {
-                        val user = it.getOrNull()
-                        Toast.makeText(context, "Login bem-sucedido: ${user?.user?.cpf}", Toast.LENGTH_LONG).show()
-                    }
-                    it.isFailure -> {
-                        val error = it.exceptionOrNull()
-                        Toast.makeText(context, "Erro no login: ${error?.message}", Toast.LENGTH_LONG).show()
-                    }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Link "Registre-se"
+        Text(
+            text = "Registre-se",
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .clickable {
+                    onRegisterClick()
+                    // Adicione um log para verificar se está sendo chamado
+                    println("Navigating to Register Screen")
+                }
+                .padding(8.dp)
+        )
+    }
+
+    // Exibir Toast ou outro feedback para o usuário baseado no resultado
+    LaunchedEffect(loginResult) {
+        loginResult?.let {
+            when {
+                it.isSuccess -> {
+                    val user = it.getOrNull()
+                    Toast.makeText(context, "Login bem-sucedido: ${user?.user?.cpf}", Toast.LENGTH_LONG).show()
+
+                    // Redireciona para o link após login bem-sucedido
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://claud-ia-website.vercel.app/"))
+                    context.startActivity(intent)
+                }
+                it.isFailure -> {
+                    val error = it.exceptionOrNull()
+                    Toast.makeText(context, "Erro no login: ${error?.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -109,7 +139,7 @@ fun LoginScreen(onForgotPasswordClick: () -> Unit = {}) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewLoginScreen() {
-    ChallengeTheme {
+    MaterialTheme {
         LoginScreen()
     }
 }

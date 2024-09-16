@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.challenge.R
 import com.example.challenge.api.RetrofitInstance
-import com.example.challenge.api.RecoveryUser // Corrija a importação
+import com.example.challenge.models.RecoveryUser // Corrija a importação
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

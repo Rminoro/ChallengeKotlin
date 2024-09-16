@@ -1,4 +1,4 @@
-package com.example.challenge.activities
+package com.example.challenge.ui.theme
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -7,22 +7,26 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.clickable
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.challenge.api.RetrofitInstance
-import com.example.challenge.models.RegisterResponse
-import com.example.challenge.models.RegisterUser
+import com.example.challenge.models.RecoveryResponse
+import com.example.challenge.models.RecoveryUser
 
 @Composable
-fun RegisterScreen(onRegisterSuccess: () -> Unit = {}) {
+fun ForgotPasswordScreen(onBackToLoginClick: () -> Unit = {}, navController: NavController) {
     var cpf by remember { mutableStateOf("") }
-    var senha by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
-    var registerResult by remember { mutableStateOf<Result<RegisterResponse>?>(null) }
+    var recoveryResult by remember { mutableStateOf<Result<RecoveryResponse>?>(null) }
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -47,32 +51,26 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit = {}) {
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        TextField(
-            value = senha,
-            onValueChange = { senha = it },
-            label = { Text("Senha") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
-        )
         Spacer(modifier = Modifier.height(16.dp))
+
         Button(
             onClick = {
                 isLoading = true
                 coroutineScope.launch {
-                    val result: Result<RegisterResponse> = try {
+                    val result: Result<RecoveryResponse> = try {
                         val response = withContext(Dispatchers.IO) {
-                            RetrofitInstance.api.register(RegisterUser(cpf, senha, email))
+                            val recoveryUser = RecoveryUser(cpf, email)
+                            RetrofitInstance.api.recuperarSenha(recoveryUser)
                         }
                         if (response.isSuccessful) {
                             Result.success(response.body()!!)
                         } else {
-                            Result.failure(Exception(response.message()))
+                            Result.failure(Exception(response.errorBody()?.string() ?: response.message()))
                         }
                     } catch (e: Exception) {
                         Result.failure(e)
                     }
-                    registerResult = result
+                    recoveryResult = result
                     isLoading = false
                 }
             },
@@ -81,24 +79,42 @@ fun RegisterScreen(onRegisterSuccess: () -> Unit = {}) {
             if (isLoading) {
                 CircularProgressIndicator(modifier = Modifier.size(24.dp))
             } else {
-                Text("Registrar")
+                Text("Recuperar Senha")
             }
         }
+        Spacer(modifier = Modifier.height(16.dp))
 
-        LaunchedEffect(registerResult) {
-            registerResult?.let {
+        Text(
+            text = "Voltar ao login",
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.clickable { onBackToLoginClick() }
+        )
+
+        LaunchedEffect(recoveryResult) {
+            recoveryResult?.let {
                 when {
                     it.isSuccess -> {
-                        val message = it.getOrNull()?.message ?: "Usuário registrado com sucesso!"
-                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-                        onRegisterSuccess()
+                        val token = it.getOrNull()?.token ?: ""
+                        // Navegar para a tela de redefinição de senha com o token como argumento
+                        navController.navigate("reset_password/$token")
                     }
                     it.isFailure -> {
-                        val error = it.exceptionOrNull()?.message ?: "Erro no registro"
+                        val error = it.exceptionOrNull()?.message ?: "Erro ao recuperar senha."
                         Toast.makeText(context, error, Toast.LENGTH_LONG).show()
                     }
                 }
             }
         }
+    }
+}
+
+
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewForgotPasswordScreen() {
+    val navController = rememberNavController()
+    MaterialTheme {
+        ForgotPasswordScreen(navController = navController)
     }
 }
