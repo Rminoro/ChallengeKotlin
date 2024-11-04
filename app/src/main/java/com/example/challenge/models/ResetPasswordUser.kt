@@ -5,6 +5,7 @@ data class ResetPasswordUser(
     val cpf: String,
     val email: String,
     val token: String,
-    val nova_senha: String
+    val novaSenha: String
 )
+
 

@@ -9,7 +9,7 @@ data class LoginResponse(
 data class RecoveryResponse(
     val success: Boolean,
     val message: String? = null,
-    val token: String? =null
+    val token: String? = null // Token adicionado para recuperação de senha
 )
 
 data class RegisterResponse(

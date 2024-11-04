@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Campo para CPF -->
+    <EditText
+        android:id="@+id/cpfEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="CPF"
+        android:inputType="number"
+        android:minHeight="48dp"
+        android:padding="12dp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Campo para Senha -->
+    <EditText
+        android:id="@+id/senhaEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Senha"
+        android:inputType="textPassword"
+        android:minHeight="48dp"
+        android:padding="12dp"
+        android:layout_below="@id/cpfEditText"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Botão para Criar Usuário -->
+    <Button
+        android:id="@+id/createButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Criar Usuário"
+        android:layout_below="@id/senhaEditText"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Botão para Buscar Usuário -->
+    <Button
+        android:id="@+id/getButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Buscar Usuário"
+        android:layout_below="@id/createButton"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Botão para Atualizar Usuário -->
+    <Button
+        android:id="@+id/updateButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Atualizar Usuário"
+        android:layout_below="@id/getButton"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Botão para Excluir Usuário -->
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Excluir Usuário"
+        android:layout_below="@id/updateButton"
+        android:layout_marginBottom="8dp" />
+
+</RelativeLayout>

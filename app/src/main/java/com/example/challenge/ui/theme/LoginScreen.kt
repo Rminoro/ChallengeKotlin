@@ -1,5 +1,6 @@
 package com.example.challenge.ui.theme
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -16,7 +17,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.challenge.api.RetrofitInstance
 import com.example.challenge.models.User
 import com.example.challenge.models.LoginResponse
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,7 +24,8 @@ import kotlinx.coroutines.withContext
 @Composable
 fun LoginScreen(
     onForgotPasswordClick: () -> Unit = {},
-    onRegisterClick: () -> Unit = {}
+    onRegisterClick: () -> Unit = {},
+    onCrudClick: () -> Unit // Parâmetro para navegação para CRUD
 ) {
     var cpf by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
@@ -32,7 +33,8 @@ fun LoginScreen(
     var loginResult by remember { mutableStateOf<Result<LoginResponse>?>(null) }
 
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
+    val sharedPreferences = context.getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
+    val coroutineScope = rememberCoroutineScope() // Mover a definição para cá
 
     Column(
         modifier = Modifier
@@ -56,6 +58,7 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
+
         Button(
             onClick = {
                 isLoading = true
@@ -93,8 +96,6 @@ fun LoginScreen(
             modifier = Modifier
                 .clickable {
                     onForgotPasswordClick()
-                    // Adicione um log para verificar se está sendo chamado
-                    println("Navigating to Forgot Password Screen")
                 }
                 .padding(8.dp)
         )
@@ -108,11 +109,19 @@ fun LoginScreen(
             modifier = Modifier
                 .clickable {
                     onRegisterClick()
-                    // Adicione um log para verificar se está sendo chamado
-                    println("Navigating to Register Screen")
                 }
                 .padding(8.dp)
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Novo botão "Acessar CRUD"
+        Button(
+            onClick = { onCrudClick() },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Acessar CRUD")
+        }
     }
 
     // Exibir Toast ou outro feedback para o usuário baseado no resultado
@@ -123,9 +132,18 @@ fun LoginScreen(
                     val user = it.getOrNull()
                     Toast.makeText(context, "Login bem-sucedido: ${user?.user?.cpf}", Toast.LENGTH_LONG).show()
 
+                    // Armazene o CPF no SharedPreferences
+                    with(sharedPreferences.edit()) {
+                        putString("user_cpf", user?.user?.cpf) // Armazena o CPF
+                        apply() // Salva as alterações
+                    }
+
                     // Redireciona para o link após login bem-sucedido
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://claud-ia-website.vercel.app/"))
                     context.startActivity(intent)
+
+                    // Navegar para a tela CRUD
+                    onCrudClick()
                 }
                 it.isFailure -> {
                     val error = it.exceptionOrNull()
@@ -140,6 +158,8 @@ fun LoginScreen(
 @Composable
 fun PreviewLoginScreen() {
     MaterialTheme {
-        LoginScreen()
+        LoginScreen(
+            onCrudClick = { /* Navegar para a tela CRUD */ }
+        )
     }
 }
